@@ -95,6 +95,28 @@ describe("GET /companies", function () {
           ],
     });
   });
+
+  test("filtering by query string", async function () {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ nameLike: "c", minEmployees: 2, maxEmployees:3 });
+
+      expect(response.statusCode).toEqual(200);
+      expect(response.body).toEqual({
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        num_employees: 2,
+        logo_url: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        num_employees: 3,
+        logo_url: "http://c3.img",
+      })
+  })
 });
 
 /************************************** GET /companies/:handle */
