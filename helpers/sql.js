@@ -3,8 +3,9 @@
 const { BadRequestError } = require("../expressError");
 
 // THIS NEEDS SOME GREAT DOCUMENTATION.
-/** Takes object with arbitrary number of keys representing columns
- * in SQL table.
+/** Takes two objects with arbitrary number of keys representing columns
+ * in SQL table to be updated and the other object includes SQLized column names
+ * that we want.
  * Returns Object with string representing columns for sql query
  * and values in an array to be included as part of SQL query
 */

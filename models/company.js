@@ -67,6 +67,33 @@ class Company {
     return companiesRes.rows;
   }
 
+  /** Filter companies.
+   *
+   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * */
+
+  // Get a list of objects
+  // Get column names and values out of it
+  // filter out the ones do not exist
+  // sql filter the query with the ones exist
+
+  static async filter(filterList) {
+    const [ name, minEmployees, maxEmployees ] = filterList;
+    if (minEmployees > maxEmployees) {
+      throw new BadRequestError();
+    }
+    const companiesRes = await db.query(
+      `SELECT handle,
+              name,
+              description,
+              num_employees AS "numEmployees",
+              logo_url      AS "logoUrl"
+      FROM companies
+      WHERE name ILIKE $1`,
+      [`%${name}%`],
+    )
+  }
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
