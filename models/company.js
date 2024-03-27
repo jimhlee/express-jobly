@@ -85,18 +85,41 @@ class Company {
       throw new BadRequestError("Min employees cannot be higher than max emplyees");
     }
 
-    keys.map((colName, idx) =>
-      if (key === "minEmployees") {
-        colName= `num_employees >= ${minEmployees}`
-      })
+    const filterParams = keys.map((colName, idx) => {
+      if (colName === 'minEmployees') {
+        return `"num_employees" >= $${idx + 1}`;
+      } else if (colName === 'maxEmployees') {
+        return `"num_employees" <= $${idx + 1}`;
+      } else if (colName === 'nameLike') {
+        return `"name" ILIKE $${idx + 1}`;
+      } else {
+        throw new BadRequestError(
+          "Can only filter by min/max employees and company name");
+      }
+    });
+    // ['num_employees >= $1, num_employees <= $2']
+    // 'num_employees >= $1 AND num_employees <= $2'
+    const values = Object.values(filterObj);
+    // [500, 100]
 
-    // TODO: handle min and max employees
-    const filterParams = keys.map((colName, idx) =>
-      `"${ colName }" =$${idx + 1}`)
+    const querySql = `
+      SELECT handle, name, description, num_employees, logo_url
+        FROM companies
+        WHERE ${filterParams.join(' AND ')}`;
+    console.log('querySQL = ', querySql)
+    console.log('[...values] ', [...values])
+    const result = await db.query(querySql, [...values]);
+    return result.rows;
+    // keys.map((colName, idx) =>
+    //   if (key === "minEmployees") {
+    //     colName= `num_employees >= ${minEmployees}`
+    //   })
+
+    // // TODO: handle min and max employees
+    // const filterParams = keys.map((colName, idx) =>
+    //   `"${ colName }" =$${idx + 1}`)
 
     // create a  sql query with dynamic where paramters
-    const sqlQuery = null;
-    const companiesRes = await db.query(sqlQuery, [...filterParams])
   }
 
 
