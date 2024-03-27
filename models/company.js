@@ -56,20 +56,44 @@ class Company {
    * */
 
   static async findAll(query) {
+  // could refactor to return empty string if no filter params and combine with findAll()
+  // separate query builder into own function
     const keys = Object.keys(query);
-    if (Object.keys(keys).length === 0) {
-      const companiesRes = await db.query(`
-        SELECT handle,
-               name,
-               description,
-               num_employees AS "numEmployees",
-               logo_url      AS "logoUrl"
-        FROM companies
-        ORDER BY name`);
-      return companiesRes.rows;
-    } else {
-      return await this._whereBuilder(query);
+    const { filterParams, values } = await this._whereBuilder(query, keys);
+    if (filterParams.length === 0) {
+      filterParams.push('')
+      values.push('')
     }
+
+    let whereClause = filterParams.join(' AND ')
+    if (whereClause.length > 0) {
+      whereClause = 'WHERE ' + whereClause
+    }
+
+    const querySql = `
+    SELECT handle, name, description, num_employees, logo_url
+      FROM companies
+       ${whereClause}`;
+
+    console.log('querysql', querySql)
+    const result = await db.query(querySql, [...values],);
+    // if (keys.length === 0) {
+    //   const companiesRes = await db.query(`
+    //     SELECT handle,
+    //            name,
+    //            description,
+    //            num_employees AS "numEmployees",
+    //            logo_url      AS "logoUrl"
+    //     FROM companies
+    //     ORDER BY name`);
+    //   return companiesRes.rows;
+    // } else {
+    //   return await this._whereBuilder(query, keys);
+    // }
+
+    // {filterParams: filterParams, values: values}
+
+    return result.rows;
   }
 
   /** Takes an object from a query string.
@@ -81,7 +105,7 @@ class Company {
    * */
 
 
-  static async _whereBuilder(query) {
+  static async _whereBuilder(query, keys) {
 
     if (query.minEmployees > query.maxEmployees) {
       throw new BadRequestError("Min employees cannot be higher than max emplyees");
@@ -100,12 +124,8 @@ class Company {
 
     const values = Object.values(query);
 
-    const querySql = `
-      SELECT handle, name, description, num_employees, logo_url
-        FROM companies
-        WHERE ${filterParams.join(' AND ')}`;
-    const result = await db.query(querySql, [...values]);
-    return result.rows;
+
+    return {filterParams: filterParams, values: values}
   }
 
   // could refactor to return empty string if no filter params and combine with findAll()
