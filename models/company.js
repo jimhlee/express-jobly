@@ -75,11 +75,10 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  // Get a list of objects.
-  // Get column names and values out of it
-  // filter out the ones do not exist
-  // sql filter the query with the ones exist
 
+  // could refactor to return empty string if no filter params and combine with findAll()
+  // separate query builder into own function
+  // key of where with value of array of values
   static async filter(filterObj) {
     const keys = Object.keys(filterObj);
     if (filterObj.minEmployees > filterObj.maxEmployees) {

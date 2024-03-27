@@ -50,10 +50,13 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * Authorization required: none
  */
 
+// TODO: refactor
 router.get("/", async function (req, res, next) {
+  // fail fast logic for extra field here
+  // use schema to validate, must be created
+  // call only one function
   let companies
-  console.log('req.query', req.query)
-  if (req.params === undefined) {
+  if (Object.keys(req.query).length === 0) {
     companies = await Company.findAll();
   } else {
     companies = await Company.filter(req.query);

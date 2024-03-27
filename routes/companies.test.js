@@ -101,8 +101,8 @@ describe("GET /companies", function () {
       .get("/companies")
       .query({ nameLike: "c", minEmployees: 2, maxEmployees:3 });
 
-      expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual({
+      expect(resp.statusCode).toEqual(200);
+      expect(resp.body.companies).toEqual([{
         handle: "c2",
         name: "C2",
         description: "Desc2",
@@ -115,8 +115,23 @@ describe("GET /companies", function () {
         description: "Desc3",
         num_employees: 3,
         logo_url: "http://c3.img",
+      }])
+  })
+
+  test("Throws error when extra query fields", async function () {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ nameLike: "c", minEmployees: 2, maxEmployees:3, logoUrl:'blah' });
+
+      expect(resp.statusCode).toEqual(400);
+      expect(resp.body).toEqual({
+        "error": {
+          "message": "Can only filter by min/max employees and company name",
+          "status": 400
+        }
       })
   })
+  // TODO: test for non-integer
 });
 
 /************************************** GET /companies/:handle */
