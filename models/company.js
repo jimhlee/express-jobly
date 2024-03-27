@@ -38,12 +38,12 @@ class Company {
                     description,
                     num_employees AS "numEmployees",
                     logo_url AS "logoUrl"`, [
-          handle,
-          name,
-          description,
-          numEmployees,
-          logoUrl,
-        ],
+      handle,
+      name,
+      description,
+      numEmployees,
+      logoUrl,
+    ],
     );
     const company = result.rows[0];
 
@@ -77,22 +77,23 @@ class Company {
   // filter out the ones do not exist
   // sql filter the query with the ones exist
 
-  static async filter(filterList) {
-    const [ name, minEmployees, maxEmployees ] = filterList;
-    if (minEmployees > maxEmployees) {
-      throw new BadRequestError();
+  static async filter(filterObj) {
+    // this comes from req.params
+    const keys = Object.keys(filterObj);
+    // [minEmployees, maxEmployees, nameLike]
+    if (filterObj.minEmployees > filterObj.maxEmployees) {
+      throw new BadRequestError("Min employees cannot be higher than max emplyees");
     }
-    const companiesRes = await db.query(
-      `SELECT handle,
-              name,
-              description,
-              num_employees AS "numEmployees",
-              logo_url      AS "logoUrl"
-      FROM companies
-      WHERE name ILIKE $1`,
-      [`%${name}%`],
-    )
+
+    // TODO: handle min and max employees
+    const filterParams = keys.map((colName, idx) =>
+      `"${ colName }" =$${idx + 1}`)
+
+    // create a  sql query with dynamic where paramters
+    const sqlQuery = null;
+    const companiesRes = await db.query(sqlQuery, [...filterParams])
   }
+
 
   /** Given a company handle, return data about company.
    *
@@ -133,11 +134,11 @@ class Company {
 
   static async update(handle, data) {
     const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          numEmployees: "num_employees",
-          logoUrl: "logo_url",
-        });
+      data,
+      {
+        numEmployees: "num_employees",
+        logoUrl: "logo_url",
+      });
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `
