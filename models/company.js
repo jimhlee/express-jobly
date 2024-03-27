@@ -85,6 +85,11 @@ class Company {
       throw new BadRequestError("Min employees cannot be higher than max emplyees");
     }
 
+    keys.map((colName, idx) =>
+      if (key === "minEmployees") {
+        colName= `num_employees >= ${minEmployees}`
+      })
+
     // TODO: handle min and max employees
     const filterParams = keys.map((colName, idx) =>
       `"${ colName }" =$${idx + 1}`)
