@@ -56,11 +56,23 @@ router.get("/", async function (req, res, next) {
   // fail fast logic for extra field here
   // use schema to validate, must be created
   // call only one function
+  const queries = {};
+  if (req.query?.minEmployees !== undefined) {
+    queries.minEmployees = Number(req.query.minEmployees);
+  }
+  if (req.query?.maxEmployees !== undefined) {
+    queries.maxEmployees = Number(req.query.maxEmployees);
+  }
+  if (req.query?.nameLike !== undefined) {
+    queries.nameLike = req.query.nameLike;
+  }
+  console.log("req.query.maxEmployees", queries);
   const validator = jsonschema.validate(
-    req.query,
+    queries,
     companyFilterSchema,
     {required: true}
   );
+
   if (!validator.valid) {
     const errs = validator.errors.map(e => e.stack);
     throw new BadRequestError(errs);
