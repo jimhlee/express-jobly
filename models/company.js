@@ -76,7 +76,6 @@ class Company {
       FROM companies
        ${whereClause}`;
 
-    console.log('querysql', querySql);
     let result;
     if (whereClause.length > 0) {
       result = await db.query(querySql, [...values],);
@@ -217,8 +216,7 @@ class Company {
         logoUrl: "logo_url",
       });
     const handleVarIdx = "$" + (values.length + 1);
-    console.log("setCols: ", setCols);
-    console.log("Values: ", values);
+
     const querySql = `
         UPDATE companies
         SET ${setCols}
