@@ -21,8 +21,33 @@ afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
 /************************************** POST /users */
-//TODO: Working test
+
 describe("POST /users", function () {
+  test("works for users: create user", async function () {
+    const resp = await request(app)
+        .post("/users")
+        .send({
+          username: "u-new",
+          firstName: "First-new",
+          lastName: "Last-newL",
+          password: "password-new",
+          email: "new@email.com",
+          isAdmin: false,
+        })
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(201);
+    expect(resp.body).toEqual({
+      "user": {
+        "username": "u-new",
+        "firstName": "First-new",
+        "lastName": "Last-newL",
+        "email": "new@email.com",
+        "isAdmin": false
+      },
+      "token": expect.any(String)
+    });
+  });
+
   test("doesn't work for users: create non-admin", async function () {
     const resp = await request(app)
         .post("/users")

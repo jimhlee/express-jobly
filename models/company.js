@@ -116,43 +116,6 @@ class Company {
     return whereClause;
   }
 
-  // could refactor to return empty string if no filter params and combine with findAll()
-  // separate query builder into own function
-  // key of where with value of array of values
-  // static async filter(query) {
-  //   const keys = Object.keys(query);
-  //   if (query.minEmployees > query.maxEmployees) {
-  //     throw new BadRequestError("Min employees cannot be higher than max emplyees");
-  //   }
-
-  //   const filterParams = keys.map((colName, idx) => {
-  //     if (colName === 'minEmployees') {
-  //       return `"num_employees" >= $${idx + 1}`;
-  //     } else if (colName === 'maxEmployees') {
-  //       return `"num_employees" <= $${idx + 1}`;
-  //     } else if (colName === 'nameLike') {
-  //       query.nameLike = `%${query.nameLike}%`;
-  //       return `"name" ILIKE $${idx + 1}`;
-  //     } else {
-  //       throw new BadRequestError(
-  //         "Can only filter by min/max employees and company name");
-  //     }
-  //   });
-
-  //   const values = Object.values(query);
-
-
-  //   const querySql = `
-  //     SELECT handle, name, description, num_employees, logo_url
-  //       FROM companies
-  //       WHERE ${filterParams.join(' AND ')}`;
-  //   console.log('querySQL = ', querySql);
-  //   console.log('[...values] ', [...values]);
-  //   const result = await db.query(querySql, [...values]);
-  //   return result.rows;
-  // }
-
-
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
