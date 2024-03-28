@@ -75,22 +75,22 @@ describe("GET /companies", function () {
               handle: "c1",
               name: "C1",
               description: "Desc1",
-              numEmployees: 1,
-              logoUrl: "http://c1.img",
+              num_employees: 1,
+              logo_url: "http://c1.img",
             },
             {
               handle: "c2",
               name: "C2",
               description: "Desc2",
-              numEmployees: 2,
-              logoUrl: "http://c2.img",
+              num_employees: 2,
+              logo_url: "http://c2.img",
             },
             {
               handle: "c3",
               name: "C3",
               description: "Desc3",
-              numEmployees: 3,
-              logoUrl: "http://c3.img",
+              num_employees: 3,
+              logo_url: "http://c3.img",
             },
           ],
     });
@@ -126,7 +126,9 @@ describe("GET /companies", function () {
       expect(resp.statusCode).toEqual(400);
       expect(resp.body).toEqual({
         "error": {
-          "message": "Can only filter by min/max employees and company name",
+          "message": [
+            "instance is not allowed to have the additional property \"logoUrl\""
+          ],
           "status": 400
         }
       })

@@ -51,23 +51,24 @@ class Company {
   }
 
   /** Find all companies.
-   *
+   * Takes optional search parameters {minEmplotees, maxEmployees, nameLike}
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * If optional provided, filters list by search params
    * */
 
   static async findAll(query) {
-  // could refactor to return empty string if no filter params and combine with findAll()
-  // separate query builder into own function
+    // could refactor to return empty string if no filter params and combine with findAll()
+    // separate query builder into own function
     const keys = Object.keys(query);
     const { filterParams, values } = await this._whereBuilder(query, keys);
     if (filterParams.length === 0) {
-      filterParams.push('')
-      values.push('')
+      filterParams.push('');
+      values.push('');
     }
 
-    let whereClause = filterParams.join(' AND ')
+    let whereClause = filterParams.join(' AND ');
     if (whereClause.length > 0) {
-      whereClause = 'WHERE ' + whereClause
+      whereClause = 'WHERE ' + whereClause;
     }
 
     const querySql = `
@@ -75,13 +76,15 @@ class Company {
       FROM companies
        ${whereClause}`;
 
-    console.log('querysql', querySql)
+    console.log('querysql', querySql);
     let result;
     if (whereClause.length > 0) {
       result = await db.query(querySql, [...values],);
     } else {
       result = await db.query(querySql);
     }
+
+    return result.rows;
     // if (keys.length === 0) {
     //   const companiesRes = await db.query(`
     //     SELECT handle,
@@ -98,7 +101,6 @@ class Company {
 
     // {filterParams: filterParams, values: values}
 
-    return result.rows;
   }
 
   /** Takes an object from a query string.
@@ -130,7 +132,7 @@ class Company {
     const values = Object.values(query);
 
 
-    return {filterParams: filterParams, values: values}
+    return { filterParams: filterParams, values: values };
   }
 
   // could refactor to return empty string if no filter params and combine with findAll()
