@@ -43,7 +43,7 @@ function ensureLoggedIn(req, res, next) {
 /** Middleware to use when they must be admin.
  *
  * If not, raises Unauthorized.
- */
+*/
 
 function ensureAdmin(req, res, next) {
   if (res.locals.user?.isAdmin) return next();

@@ -10,7 +10,7 @@ const {
 
 
 const { SECRET_KEY } = require("../config");
-const { authenticate } = require("../models/user");
+// const { authenticate } = require("../models/user");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, SECRET_KEY);
 const adminJwt = jwt.sign({ username: "admin", isAdmin: true }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
@@ -76,11 +76,10 @@ describe("ensureLoggedIn", function () {
 describe("ensureAdmin", function () {
   test("works", function () {
     const req = { headers: { authorization: `Bearer ${adminJwt}` } };
-    const res = { locals: {} };
+    const res = { locals: { user: { username: "admin", isAdmin: true,} } };
     ensureAdmin(req, res, next);
     expect(res.locals).toEqual({
       user: {
-        iat: expect.any(Number),
         username: "admin",
         isAdmin: true,
       },
