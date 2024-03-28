@@ -2,7 +2,7 @@
 
 const { sqlForPartialUpdate } = require("./sql");
 
-
+// TODO: test for zero, one and many
 describe("sqlForPartialUpdate", function () {
   test("returns { 'SQL query string', [array of variables] }", function () {
     const dataToUpdate = {
@@ -26,6 +26,8 @@ describe("sqlForPartialUpdate", function () {
   test('Throws BadRequest error if empty', function () {
     try {
       let partialSQL = sqlForPartialUpdate({}, {});
+      // throw a custom error here to check for correct error
+      // new error should be generic
     } catch (err) {
       expect(err.message).toEqual('No data')
     }

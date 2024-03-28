@@ -89,7 +89,7 @@ describe("findAll", function () {
 
 
 /************************************** filter */
-
+// change describe to findAll with filter
 describe("filter", function () {
   test("works: three things in query string", async function () {
     let companies = await Company.findAll({
@@ -144,6 +144,7 @@ describe("filter", function () {
         maxEmployees: 2,
         minEmployees: 3
       });
+      // throw custom error here
     } catch (err) {
       expect(err.message).toEqual("Min employees cannot be higher than max emplyees");
     }

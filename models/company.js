@@ -60,12 +60,15 @@ class Company {
     // could refactor to return empty string if no filter params and combine with findAll()
     // separate query builder into own function
     const keys = Object.keys(query);
+    // could move min > max check to this function
     const { filterParams, values } = await this._whereBuilder(query, keys);
+    // move this to whereBuilder
     if (filterParams.length === 0) {
       filterParams.push('');
       values.push('');
     }
 
+    // move this to whereBuilder
     let whereClause = filterParams.join(' AND ');
     if (whereClause.length > 0) {
       whereClause = 'WHERE ' + whereClause;
@@ -77,6 +80,8 @@ class Company {
        ${whereClause}`;
 
     let result;
+    // refactor to account for truthiness instead
+    // change to single query with empty string or actual where clause
     if (whereClause.length > 0) {
       result = await db.query(querySql, [...values],);
     } else {
