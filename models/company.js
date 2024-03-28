@@ -56,55 +56,29 @@ class Company {
    * If optional provided, filters list by search params
    * */
 
-  static async findAll(query) {
+  static async findAll(query={}) {
     // could refactor to return empty string if no filter params and combine with findAll()
     // separate query builder into own function
+    if (query.minEmployees > query.maxEmployees) {
+      throw new BadRequestError("Min employees cannot be higher than max employees");
+    }
     const keys = Object.keys(query);
     // could move min > max check to this function
-    const { filterParams, values } = await this._whereBuilder(query, keys);
+    const whereClause = this._whereBuilder(query, keys);
     // move this to whereBuilder
-    if (filterParams.length === 0) {
-      filterParams.push('');
-      values.push('');
-    }
 
-    // move this to whereBuilder
-    let whereClause = filterParams.join(' AND ');
-    if (whereClause.length > 0) {
-      whereClause = 'WHERE ' + whereClause;
-    }
 
     const querySql = `
     SELECT handle, name, description, num_employees, logo_url
       FROM companies
        ${whereClause}`;
 
-    let result;
-    // refactor to account for truthiness instead
-    // change to single query with empty string or actual where clause
-    if (whereClause.length > 0) {
-      result = await db.query(querySql, [...values],);
-    } else {
-      result = await db.query(querySql);
-    }
+    const values = Object.values(query);
+
+    const result = await db.query(querySql, [...values],);
+
 
     return result.rows;
-    // if (keys.length === 0) {
-    //   const companiesRes = await db.query(`
-    //     SELECT handle,
-    //            name,
-    //            description,
-    //            num_employees AS "numEmployees",
-    //            logo_url      AS "logoUrl"
-    //     FROM companies
-    //     ORDER BY name`);
-    //   return companiesRes.rows;
-    // } else {
-    //   return await this._whereBuilder(query, keys);
-    // }
-
-    // {filterParams: filterParams, values: values}
-
   }
 
   /** Takes an object from a query string.
@@ -116,11 +90,7 @@ class Company {
    * */
 
 
-  static async _whereBuilder(query, keys) {
-
-    if (query.minEmployees > query.maxEmployees) {
-      throw new BadRequestError("Min employees cannot be higher than max emplyees");
-    }
+  static _whereBuilder(query, keys) {
 
     const filterParams = keys.map((colName, idx) => {
       if (colName === 'minEmployees') {
@@ -133,10 +103,17 @@ class Company {
       }
     });
 
-    const values = Object.values(query);
+    if (filterParams.length === 0) {
+      filterParams.push('');
+    }
+
+    let whereClause = filterParams.join(' AND ');
+    if (whereClause.length > 0) {
+      whereClause = 'WHERE ' + whereClause;
+    }
 
 
-    return { filterParams: filterParams, values: values };
+    return whereClause;
   }
 
   // could refactor to return empty string if no filter params and combine with findAll()

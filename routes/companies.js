@@ -51,7 +51,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * Authorization required: none
  */
 
-// TODO: refactor
+
 router.get("/", async function (req, res, next) {
 
   const queries = req.query;
@@ -73,11 +73,8 @@ router.get("/", async function (req, res, next) {
     throw new BadRequestError(errs);
   }
 
-  const companies = await Company.findAll(req.query);
-  // if (Object.keys(req.query).length === 0) {
-  // } else {
-  //   companies = await Company.filter(req.query);
-  // }
+  const companies = await Company.findAll(queries);
+
   return res.json({ companies });
 });
 

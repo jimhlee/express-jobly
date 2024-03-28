@@ -133,7 +133,22 @@ describe("GET /companies", function () {
         }
       })
   })
-  // TODO: test for non-integer
+
+  test("Throws error when minEmployees is a non-integer", async function () {
+    const resp = await request(app)
+      .get("/companies")
+      .query({ minEmployees: "apple" });
+
+      expect(resp.statusCode).toEqual(400);
+      expect(resp.body).toEqual({
+        "error": {
+          "message": [
+            "instance.minEmployees is not of a type(s) integer"
+          ],
+          "status": 400
+        }
+      })
+  })
 });
 
 /************************************** GET /companies/:handle */

@@ -88,9 +88,7 @@ describe("findAll", function () {
 });
 
 
-/************************************** filter */
-// change describe to findAll with filter
-describe("filter", function () {
+describe("findAll with filter", function () {
   test("works: three things in query string", async function () {
     let companies = await Company.findAll({
       nameLike: "c",
@@ -144,9 +142,9 @@ describe("filter", function () {
         maxEmployees: 2,
         minEmployees: 3
       });
-      // throw custom error here
+      throw new Error("Should not be here.");
     } catch (err) {
-      expect(err.message).toEqual("Min employees cannot be higher than max emplyees");
+      expect(err.message).toEqual("Min employees cannot be higher than max employees");
     }
   });
 });

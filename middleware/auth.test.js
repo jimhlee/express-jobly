@@ -5,11 +5,14 @@ const { UnauthorizedError } = require("../expressError");
 const {
   authenticateJWT,
   ensureLoggedIn,
+  ensureAdmin
 } = require("./auth");
 
 
 const { SECRET_KEY } = require("../config");
+const { authenticate } = require("../models/user");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, SECRET_KEY);
+const adminJwt = jwt.sign({ username: "admin", isAdmin: true }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
 
 function next(err) {
@@ -58,13 +61,36 @@ describe("ensureLoggedIn", function () {
     const req = {};
     const res = { locals: {} };
     expect(() => ensureLoggedIn(req, res, next))
-        .toThrow(UnauthorizedError);
+      .toThrow(UnauthorizedError);
   });
 
   test("unauth if no valid login", function () {
     const req = {};
-    const res = { locals: { user: { } } };
+    const res = { locals: { user: {} } };
     expect(() => ensureLoggedIn(req, res, next))
-        .toThrow(UnauthorizedError);
+      .toThrow(UnauthorizedError);
+  });
+
+});
+
+describe("ensureAdmin", function () {
+  test("works", function () {
+    const req = { headers: { authorization: `Bearer ${adminJwt}` } };
+    const res = { locals: {} };
+    ensureAdmin(req, res, next);
+    expect(res.locals).toEqual({
+      user: {
+        iat: expect.any(Number),
+        username: "admin",
+        isAdmin: true,
+      },
+    });
+  });
+
+  test("works without headers", function () {
+    const req = {};
+    const res = { locals: {} };
+    expect(() => ensureLoggedIn(req, res, next))
+      .toThrow(UnauthorizedError);
   });
 });
