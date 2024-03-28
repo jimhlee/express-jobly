@@ -50,6 +50,18 @@ function ensureAdmin(req, res, next) {
   throw new UnauthorizedError();
 }
 
+/** Middleware to use when they must be matching user.
+ *
+ * If not, raises Unauthorized.
+*/
+
+function ensureCorrectUser(req, res, next) {
+  if () {
+
+  } else {
+    return next();
+  }
+}
 
 module.exports = {
   authenticateJWT,
