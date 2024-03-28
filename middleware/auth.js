@@ -52,30 +52,37 @@ function ensureAdmin(req, res, next) {
   throw new UnauthorizedError();
 }
 
-/** Middleware to use when they must be matching user.
+/** Middleware to use when they must be admin or that specific user.
  *
- * Sets flag on request of sameUser = true or fasle depending on condition
+ * If not, raises Unauthorized.
 */
 
-function ensureCorrectUser(req, res, next) {
-  console.log('ran correct user in middleware')
-  const specificUser = req.params.username;
+function ensureCorrectUserOrAdmin(req, res, next) {
   const currentUser = res.locals.user?.username;
-  // console.log('req params', req.params)
-  // console.log('cur user', currentUser)
-  // check current user against specific user
-  // if they don't match, call next
-  // if they do, set flag on req of sameUser = true
-
-  // boolean
-  res.locals.sameUser = (specificUser === currentUser);
-  console.log('res.locals.sameUser', res.locals.sameUser)
-  return next();
+  const user = req.params.username;
+  if (res.locals.user?.isAdmin || currentUser === user) return next();
+  throw new UnauthorizedError();
 }
+
+// function ensureCorrectUser(req, res, next) {
+//   console.log('ran correct user in middleware')
+//   const specificUser = req.params.username;
+//   const currentUser = res.locals.user?.username;
+//   // console.log('req params', req.params)
+//   // console.log('cur user', currentUser)
+//   // check current user against specific user
+//   // if they don't match, call next
+//   // if they do, set flag on req of sameUser = true
+
+//   // boolean
+//   res.locals.sameUser = (specificUser === currentUser);
+//   console.log('res.locals.sameUser', res.locals.sameUser)
+//   return next();
+// }
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   ensureAdmin,
-  ensureCorrectUser
+  ensureCorrectUserOrAdmin
 };
