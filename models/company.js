@@ -76,7 +76,12 @@ class Company {
        ${whereClause}`;
 
     console.log('querysql', querySql)
-    const result = await db.query(querySql, [...values],);
+    let result;
+    if (whereClause.length > 0) {
+      result = await db.query(querySql, [...values],);
+    } else {
+      result = await db.query(querySql);
+    }
     // if (keys.length === 0) {
     //   const companiesRes = await db.query(`
     //     SELECT handle,
@@ -210,7 +215,8 @@ class Company {
         logoUrl: "logo_url",
       });
     const handleVarIdx = "$" + (values.length + 1);
-
+    console.log("setCols: ", setCols);
+    console.log("Values: ", values);
     const querySql = `
         UPDATE companies
         SET ${setCols}

@@ -56,17 +56,16 @@ router.get("/", async function (req, res, next) {
   // fail fast logic for extra field here
   // use schema to validate, must be created
   // call only one function
-  const queries = {};
+  // const queries = {};
+
+  const queries = req.query;
   if (req.query?.minEmployees !== undefined) {
     queries.minEmployees = Number(req.query.minEmployees);
   }
   if (req.query?.maxEmployees !== undefined) {
     queries.maxEmployees = Number(req.query.maxEmployees);
   }
-  if (req.query?.nameLike !== undefined) {
-    queries.nameLike = req.query.nameLike;
-  }
-  console.log("req.query.maxEmployees", queries);
+
   const validator = jsonschema.validate(
     queries,
     companyFilterSchema,
@@ -110,7 +109,7 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: login
  */
 
-router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
+router.patch("/:handle", async function (req, res, next) {
   const validator = jsonschema.validate(
     req.body,
     companyUpdateSchema,
