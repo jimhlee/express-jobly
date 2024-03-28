@@ -12,6 +12,7 @@ const {
   commonAfterEach,
   commonAfterAll,
   u1Token,
+  adminToken,
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -22,7 +23,7 @@ afterAll(commonAfterAll);
 /************************************** POST /users */
 
 describe("POST /users", function () {
-  test("works for users: create non-admin", async function () {
+  test("doesn't work for users: create non-admin", async function () {
     const resp = await request(app)
         .post("/users")
         .send({
@@ -34,19 +35,16 @@ describe("POST /users", function () {
           isAdmin: false,
         })
         .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(201);
+    expect(resp.statusCode).toEqual(401);
     expect(resp.body).toEqual({
-      user: {
-        username: "u-new",
-        firstName: "First-new",
-        lastName: "Last-newL",
-        email: "new@email.com",
-        isAdmin: false,
-      }, token: expect.any(String),
+      error: {
+        message: "Unauthorized",
+        status: 401
+      }
     });
   });
 
-  test("works for users: create admin", async function () {
+  test("doesn't work for users: create admin", async function () {
     const resp = await request(app)
         .post("/users")
         .send({
@@ -58,15 +56,12 @@ describe("POST /users", function () {
           isAdmin: true,
         })
         .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(201);
+    expect(resp.statusCode).toEqual(401);
     expect(resp.body).toEqual({
-      user: {
-        username: "u-new",
-        firstName: "First-new",
-        lastName: "Last-newL",
-        email: "new@email.com",
-        isAdmin: true,
-      }, token: expect.any(String),
+      error: {
+        message: "Unauthorized",
+        status: 401
+      }
     });
   });
 
@@ -90,7 +85,7 @@ describe("POST /users", function () {
         .send({
           username: "u-new",
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -162,6 +157,7 @@ describe("GET /users", function () {
 
 describe("GET /users/:username", function () {
   test("works for users", async function () {
+    console.log('req.params', req.params)
     const resp = await request(app)
         .get(`/users/u1`)
         .set("authorization", `Bearer ${u1Token}`);
@@ -236,11 +232,12 @@ describe("PATCH /users/:username", () => {
         .send({
           firstName: 42,
         })
-        .set("authorization", `Bearer ${u1Token}`);
+        .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
   test("works: set new password", async function () {
+    console.log('new password run')
     const resp = await request(app)
         .patch(`/users/u1`)
         .send({

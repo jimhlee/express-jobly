@@ -36,6 +36,7 @@ function authenticateJWT(req, res, next) {
  */
 
 function ensureLoggedIn(req, res, next) {
+  console.log('ran logged in middleware')
   if (res.locals.user?.username) return next();
   throw new UnauthorizedError();
 }
@@ -46,25 +47,35 @@ function ensureLoggedIn(req, res, next) {
 */
 
 function ensureAdmin(req, res, next) {
-  if (res.locals.user?.isAdmin) return next();
+  console.log('ran admin in middleware')
+  if (res.locals.user?.isAdmin || res.locals.sameUser) return next();
   throw new UnauthorizedError();
 }
 
 /** Middleware to use when they must be matching user.
  *
- * If not, raises Unauthorized.
+ * Sets flag on request of sameUser = true or fasle depending on condition
 */
 
 function ensureCorrectUser(req, res, next) {
-  if () {
+  console.log('ran correct user in middleware')
+  const specificUser = req.params.username;
+  const currentUser = res.locals.user?.username;
+  // console.log('req params', req.params)
+  // console.log('cur user', currentUser)
+  // check current user against specific user
+  // if they don't match, call next
+  // if they do, set flag on req of sameUser = true
 
-  } else {
-    return next();
-  }
+  // boolean
+  res.locals.sameUser = (specificUser === currentUser);
+  console.log('res.locals.sameUser', res.locals.sameUser)
+  return next();
 }
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
-  ensureAdmin
+  ensureAdmin,
+  ensureCorrectUser
 };
