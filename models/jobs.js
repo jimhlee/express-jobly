@@ -51,7 +51,8 @@ class Job {
       FROM jobs
        ${whereClause}`;
 
-    const values = Object.values(query);
+    const values = Object.values(query).filter(v => (typeof v) !== Boolean);
+    console.log('values', values)
     const result = await db.query(querySql, [...values],);
 
     return result.rows;
@@ -67,7 +68,7 @@ class Job {
 
    static _whereBuilder(query, keys) {
     let idx = 0;
-    console.log("keys", keys)
+
     const filterParams = keys.map((colName) => {
       if (colName === 'title') {
         idx++;
