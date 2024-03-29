@@ -36,7 +36,6 @@ function authenticateJWT(req, res, next) {
  */
 
 function ensureLoggedIn(req, res, next) {
-  console.log('ran logged in middleware')
   if (res.locals.user?.username) return next();
   throw new UnauthorizedError();
 }
@@ -47,7 +46,6 @@ function ensureLoggedIn(req, res, next) {
 */
 
 function ensureAdmin(req, res, next) {
-  console.log('ran admin in middleware')
   if (res.locals.user?.isAdmin || res.locals.sameUser) return next();
   throw new UnauthorizedError();
 }
