@@ -3,9 +3,6 @@
   "$id": "http://our.company.com/companyNew.schema.json",
   "type": "object",
   "properties": {
-    "id": {
-      "type": "integer"
-    },
     "title": {
       "type": "string"
     },
@@ -16,15 +13,8 @@
     "equity": {
       "type": "number",
       "maximum": 1.0
-    },
-    "companyHandle": {
-      "type": "string",
-      "maxLength": 25
     }
   },
   "additionalProperties": false,
-  "required": [
-    "title",
-    "companyHandle"
-  ]
+  "required": []
 }

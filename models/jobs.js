@@ -36,10 +36,64 @@ class Job {
     return job;
   }
 
-  /** Finds all companies */
-  static async findAll(query = {}) {
-    const result = await db.query(query);
+  /** Finds all companies
+   * Takes optional search parameters {title, minSalary, hasEquity}
+   * Returns [{ id, title, salary, equity, company_handle }, ...]
+   * If optional provided, filters list by search params
+   * */
+  static async findAll(query) {
+
+    const keys = Object.keys(query);
+    const whereClause = this._whereBuilder(query, keys);
+
+    const querySql = `
+    SELECT id, title, salary, equity, company_handle
+      FROM jobs
+       ${whereClause}`;
+
+    const values = Object.values(query);
+    const result = await db.query(querySql, [...values],);
+
     return result.rows;
+  }
+
+   /** Takes an object from a query string.
+   * {title, minSalary, hasEquity}
+   * They are optional and do not need to have all 3.
+   * Filter jobs according to the query string.
+   *
+   * Returns "WHERE ..."
+   * */
+
+   static _whereBuilder(query, keys) {
+    let idx = 0;
+    console.log("keys", keys)
+    const filterParams = keys.map((colName) => {
+      if (colName === 'title') {
+        idx++;
+        query.title = `%${query.title}%`;
+        return `"title" ILIKE $${idx}`;
+      } else if (colName === 'minSalary') {
+        idx++;
+        return `"salary" >= $${idx}`;
+      } else if (colName === 'hasEquity' && query.hasEquity) {
+        return `"equity" > 0`;
+      }
+    });
+
+    console.log("filterParams", filterParams);
+    if (filterParams.length === 0) {
+      filterParams.push('');
+    }
+
+    let whereClause = filterParams.join(' AND ');
+
+    if (whereClause.length > 0) {
+      whereClause = 'WHERE ' + whereClause;
+    }
+
+
+    return whereClause;
   }
 
   /** Given a job id, return data about job

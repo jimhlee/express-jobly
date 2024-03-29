@@ -86,7 +86,7 @@ class Company {
    * They are optional and do not need to have all 3.
    * Filter companies according to the query string.
    *
-   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * Returns "WHERE ..."
    * */
 
 
