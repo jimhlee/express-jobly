@@ -51,8 +51,8 @@ class Job {
       FROM jobs
        ${whereClause}`;
 
-    const values = Object.values(query).filter(v => (typeof v) !== Boolean);
-    console.log('values', values)
+    const values = Object.values(query).filter(v => (typeof v) !== "boolean");
+
     const result = await db.query(querySql, [...values],);
 
     return result.rows;
